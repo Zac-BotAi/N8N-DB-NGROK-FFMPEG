@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: n8n-service
+    plan: standard   # choose your plan
+    image:
+      # Pin to your desired n8n version
+      url: docker.io/n8nio/n8n:latest
+    envVars:
+      - key: WEBHOOK_URL
+        value: https://n8n-service-l9bk.onrender.com/
+      - key: N8N_IMAGE_PULL_POLICY
+        value: Always
+    dockerfilePath: Dockerfile
+    buildCommand: npm install
+    startCommand: n8n
+    # ensure FFmpeg and community node are installed in your Dockerfile
+
+databases:
+  - name: n8n-db
+    plan: basic-256mb  # or larger, depending on needs
