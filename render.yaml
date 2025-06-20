@@ -1,8 +1,9 @@
-previews:
-  generation: automatic
-
+# Top-level env group definition
 envVarGroups:
   - name: n8n-secrets
+
+previews:
+  generation: automatic
 
 services:
   - type: web
@@ -10,36 +11,28 @@ services:
     plan: standard
     dockerfilePath: Dockerfile
 
-    # Loads secrets from the envVarGroup 'n8n-secrets'
-    envVarGroups:
-      - name: n8n-secrets
+    previews:
+      generation: automatic
+      plan: standard
 
     envVars:
-      # Public-facing endpoint defaults to production, but overrides in PR environments
       - key: WEBHOOK_URL
         value: https://<your-app>.onrender.com/
         previewValue: https://app-pr-${RENDER_PR_NUMBER}.onrender.com/
-
-      # Set your API endpoint variable — also preview-overridden
       - key: API_ENDPOINT
         value: https://<your-app>.onrender.com/
         previewValue: https://app-pr-${RENDER_PR_NUMBER}.onrender.com/
-
-      # Secrets managed by envVarGroups, synced via Render UI
-      - key: TELEGRAM_BOT_TOKEN
-        fromGroup: n8n-secrets
-      - key: GOOGLE_CLIENT_ID
-        fromGroup: n8n-secrets
-      - key: GOOGLE_CLIENT_SECRET
-        fromGroup: n8n-secrets
-      - key: NGROK_TOKEN
-        fromGroup: n8n-secrets
+      - fromGroup: n8n-secrets
 
     startCommand: |
-      # Start ngrok to expose n8n publicly
       ngrok authtoken $NGROK_TOKEN
       ngrok http 5678 --log=stdout &
-      # Launch n8n after ngrok is up
+      n8n
+
+databases:
+  - name: n8n-db
+    plan: basic-256mb
+
       n8n
 
 databases:
