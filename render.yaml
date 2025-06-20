@@ -2,14 +2,18 @@ services:
   - type: web
     name: n8n-service
     plan: standard
-    image:
-      url: docker.io/n8nio/n8n:latest
+    dockerfilePath: Dockerfile
     envVars:
       - key: WEBHOOK_URL
-        value: https://<your-app>.onrender.com/
-    dockerfilePath: Dockerfile
-    buildCommand: npm install
-    startCommand: n8n
+        fromDatabase: false
+        value: https://$(AUTO_NGROK_DOMAIN)/
+      - key: AUTO_NGROK_DOMAIN
+        value: "" # injected at runtime by ngrok startup
+    startCommand: |
+      ngrok authtoken $NGROK_TOKEN &&
+      ngrok http 5678 --log=stdout > ngrok.log &
+      n8n
 databases:
   - name: n8n-db
     plan: basic-256mb
+
