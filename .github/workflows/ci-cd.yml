@@ -2,24 +2,48 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
+permissions:
+  contents: read  # required for checkout
+  id-token: write # if you need OIDC
 
 jobs:
   build-scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+
       - name: Run Trivy scan
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
+
       - name: Build Docker image
-        run: docker build . -t ghcr.io/${{ github.repository }}/n8n-media:latest
+        run: |
+          docker build . -t ghcr.io/${{ github.repository }}/n8n-media:latest
+
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push image
+        run: |
+          docker push ghcr.io/${{ github.repository }}/n8n-media:latest
+
+  deploy:
+    needs: build-scan
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Trigger Render deploy
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push image
         run: docker push ghcr.io/${{ github.repository }}/n8n-media:latest
