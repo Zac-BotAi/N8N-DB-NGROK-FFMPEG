@@ -5,15 +5,19 @@ services:
     dockerfilePath: Dockerfile
     envVars:
       - key: WEBHOOK_URL
-        fromDatabase: false
-        value: https://$(AUTO_NGROK_DOMAIN)/
-      - key: AUTO_NGROK_DOMAIN
-        value: "" # injected at runtime by ngrok startup
+        value: https://<your-app>.onrender.com/
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: NGROK_TOKEN
+        sync: false
     startCommand: |
       ngrok authtoken $NGROK_TOKEN &&
-      ngrok http 5678 --log=stdout > ngrok.log &
+      ngrok http 5678 --log=stdout & 
       n8n
 databases:
   - name: n8n-db
     plan: basic-256mb
-
