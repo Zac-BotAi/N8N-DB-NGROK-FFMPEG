@@ -1,4 +1,3 @@
-# Top-level env group definition
 envVarGroups:
   - name: n8n-secrets
 
@@ -8,12 +7,9 @@ previews:
 services:
   - type: web
     name: n8n-service
+    runtime: docker               # ✅ This is critical
     plan: standard
     dockerfilePath: Dockerfile
-
-    previews:
-      generation: automatic
-      plan: standard
 
     envVars:
       - key: WEBHOOK_URL
