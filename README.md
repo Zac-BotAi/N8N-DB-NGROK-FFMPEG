@@ -43,7 +43,33 @@ GOOGLE_CLIENT_SECRET=...
 
 ---
 
-## 🧩 Dockerfile (updated)
+Create the n8n-secrets envVarGroup in Render UI, adding:
+
+TELEGRAM_BOT_TOKEN
+
+GOOGLE_CLIENT_ID
+
+GOOGLE_CLIENT_SECRET
+
+NGROK_TOKEN
+
+Push this render.yaml update to your repo’s main branch.
+
+Render will:
+
+Recognize the new blueprint.
+
+Apply settings to production.
+
+Automatically spin up preview environments (for PRs) with the same configuration.
+
+Configure any additional preview-specific logic in n8n, e.g. redirect URLs based on API_ENDPOINT.
+
+Let me know if you want help scripting database resets in previews or customizing workflows per environment!
+
+---
+
+## 🧩 Dockerfile 
 
 ```dockerfile
 FROM n8nio/n8n:latest
