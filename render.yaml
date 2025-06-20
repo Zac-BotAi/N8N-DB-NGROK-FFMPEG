@@ -7,7 +7,7 @@ previews:
 services:
   - type: web
     name: n8n-service
-    runtime: docker               # ✅ This is critical
+    runtime: docker
     plan: standard
     dockerfilePath: Dockerfile
 
@@ -20,11 +20,7 @@ services:
         previewValue: https://app-pr-${RENDER_PR_NUMBER}.onrender.com/
       - fromGroup: n8n-secrets
 
-    startCommand: |
-      ngrok authtoken $NGROK_TOKEN
-      ngrok http 5678 --log=stdout &
-      n8n
-
-databases:
-  - name: n8n-db
-    plan: basic-256mb
+# (Optional) Omit this block if using existing 'n8n-db' service
+# databases:
+#   - name: n8n-db
+#     plan: basic-256mb
