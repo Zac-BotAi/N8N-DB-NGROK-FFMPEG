@@ -2,32 +2,56 @@
 A self-hosted n8n instance on Render with full FFmpeg support — use it to build workflows that process video and audio (merge, overlay, inspect, or custom commands) and interface with external services via webhooks.
 
 
-# n8n + FFmpeg on Render
+# n8n + Media Tools on Render
 
-This repository runs n8n on Render, enhanced with FFmpeg support and community FFmpeg nodes. Use this setup to process media files within n8n workflows—ideal for tasks like video merging, audio overlay, metadata extraction, or running custom FFmpeg commands.
+Self-hosted **n8n** on Render, with media processing (FFmpeg, ImageMagick, ExifTool, Ghostscript, yt-dlp, SoX), CI/CD, and public webhooks via ngrok.
 
-### 🚀 Features
-- **FFmpeg integration** (system-level + FFmpeg n8n node)
-  - Merge videos
-  - Overlay audio onto video
-  - Retrieve media info (streams, codecs, metadata)
-  - Execute custom FFmpeg commands :contentReference[oaicite:3]{index=3}
-- Hosted and containerized via Render (using `render.yaml`)
-- Public-facing via your `WEBHOOK_URL`, enabling Telegram, Google OAuth, and other webhook-based integrations
-- Easily extendable: drop in additional CLI tools (ImageMagick, etc.) by extending `Dockerfile`
+## 🚀 Features
+
+- **FFmpeg** + community node for audio/video operations
+- **ImageMagick** & **Ghostscript** for powerful image/PDF workflows
+- **ExifTool** for metadata handling
+- **yt-dlp** for downloading media
+- **SoX** for advanced audio editing
+- **Telegram Trigger**, **Google Drive/Calendar** integrations with secure webhooks via ngrok
+- **CI/CD** with GitHub Actions: build, scan (Trivy), and deploy to Render
+- **Security automation**: container scans, Dependabot/Snyk for deps
 
 ---
 
-## 🛠️ Getting Started
+## 🧰 Requirements
 
-### 1. Install FFmpeg & FFmpeg Node  
-Ensure your Dockerfile includes:
+- Render account
+- ngrok account & `NGROK_TOKEN`
+- GitHub repo (connected to Render)
+- Google & Telegram API credentials
+
+---
+
+## 🛠 Setup Overview
+
+1. **Clone the repo**  
+2. Copy `.env.example` → `.env` with:
+NGROK_TOKEN=...
+TELEGRAM_BOT_TOKEN=...
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+3. **Dockerfile** includes all necessary tools.
+4. **render.yaml** configures the n8n + Postgres services.
+5. **CI/CD workflow** (GitHub Actions) builds, scans, deploys on push to `main`.
+6. **ngrok** runs on startup to expose `WEBHOOK_URL`.
+
+---
+
+## 🧩 Dockerfile (updated)
 
 ```dockerfile
 FROM n8nio/n8n:latest
 USER root
-RUN apt-get update \
-  && apt-get install -y ffmpeg \
-  && npm install --prefix /usr/local/lib/node_modules/n8n n8n-nodes-ffmpeg \
-  && rm -rf /var/lib/apt/lists/*
+
+RUN apk add --no-cache \
+ffmpeg imagemagick ghostscript exiftool yt-dlp sox perl \
+&& npm install -g n8n-nodes-ffmpeg
+
+# Clean up
 USER node
