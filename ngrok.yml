@@ -1,0 +1,17 @@
+# ngrok.yml
+version: "2"
+
+# This line tells ngrok to get your auth token from an environment variable
+# named NGROK_AUTHTOKEN. This is a security best practice.
+authtoken: ${NGROK_AUTHTOKEN}
+
+# This solves your previous "update check" error.
+update_check: false
+
+# Define your tunnels here. You can define more than one.
+tunnels:
+  n8n-tunnel: # You can name this whatever you like
+    # The protocol of the service you want to expose (e.g., http, tcp)
+    proto: http
+    # The address of your n8n service within Render. n8n typically runs on port 5678.
+    addr: 5678
