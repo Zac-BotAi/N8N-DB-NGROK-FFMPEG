@@ -11,6 +11,13 @@ services:
     plan: standard
     dockerfilePath: Dockerfile
 
+ngrok service
+  - type: web
+    name: ngrok
+    runtime: docker
+    plan: standard
+    dockerfilePath: Dockerfile
+
     envVars:
       - key: WEBHOOK_URL
         value: https://<your-app>.onrender.com/
@@ -18,7 +25,11 @@ services:
       - key: API_ENDPOINT
         value: https://<your-app>.onrender.com/
         previewValue: https://app-pr-${RENDER_PR_NUMBER}.onrender.com/
+      - key: NGROK_AUTHTOKEN
+        value: ${NGROK_AUTHTOKEN}
+        previewValue
       - fromGroup: n8n-secrets
+
 
 # (Optional) Omit this block if using existing 'n8n-db' service
 # databases:
